@@ -51,11 +51,11 @@
           ¿Que te gusto mas?
           <select name="gusto" required>
             <option value="" selected disabled>Selecciona una opcion</option>
-            <option value="Zona de tecnologia">Zona de Gamificacion</option>
-            <option value="Zona de lectura">Zona de Robotica</option>
-            <option value="Talleres">Zona de Impresion 3D</option>
-            <option value="Juegos">Zona Recorrido Historico</option>
-            <option value="Juegos">Zona de Cine</option>
+            <option value="Zona de Gamificacion">Zona de Gamificacion</option>
+            <option value="Zona de Robotica">Zona de Robotica</option>
+            <option value="Zona de Impresion 3D">Zona de Impresion 3D</option>
+            <option value="Zona Recorrido Historico">Zona Recorrido Historico</option>
+            <option value="Zona de Cine">Zona de Cine</option>
           </select>
         </label>
 
@@ -109,10 +109,13 @@
       feedback.textContent = "Enviando respuestas...";
 
       try {
+        const selectGusto = form.gusto;
+        const gustoTexto = selectGusto.options[selectGusto.selectedIndex].text;
+
         const encuestaData = {
           jugador: player,
           visita: form.visita.value,
-          gusto: form.gusto.value,
+          gusto: gustoTexto,
           comentarios: form.comentarios.value,
           fecha: new Date().toISOString(),
           timestamp: Date.now()
