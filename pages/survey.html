@@ -9,30 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../index.css">
   <script src="page-theme.js" defer></script>
-  
-  <!-- Firebase SDK -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
-    
-    // Configuración de Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyAnx7Wn7pZ05tx7OiLK9OdAu-o18PcKaq0",
-      authDomain: "tecnoteca-a2e4a.firebaseapp.com",
-      databaseURL: "https://tecnoteca-a2e4a-default-rtdb.firebaseio.com",
-      projectId: "tecnoteca-a2e4a",
-      storageBucket: "tecnoteca-a2e4a.firebasestorage.app",
-      messagingSenderId: "1043608696832",
-      appId: "1:1043608696832:web:da52be884a9684a2e980e5"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    
-    window.db = db;
-    window.push = push;
-    window.ref = ref;
-  </script>
 </head>
 <body class="survey-page">
   <div class="floating-logos" aria-hidden="true">
@@ -58,11 +34,7 @@
 
       <h1 class="hero-title demo-title">Ayudanos a mejorar</h1>
 
-      <!-- ✅ FORM CON FIREBASE -->
-      <form 
-        id="demoSurveyForm"
-        class="demo-form"
-      >
+      <form id="demoSurveyForm" class="demo-form">
 
         <label>
           ¿Como fue tu visita?
@@ -104,8 +76,26 @@
     </section>
   </main>
 
-  <!-- ✅ JAVASCRIPT CON REALTIME DATABASE -->
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdOaDropLLWstu3FUPaBxZCWO9asW97Co",
+      authDomain: "tecnotecagamificacion.firebaseapp.com",
+      databaseURL: "https://tecnotecagamificacion-default-rtdb.firebaseio.com",
+      projectId: "tecnotecagamificacion",
+      storageBucket: "tecnotecagamificacion.firebasestorage.app",
+      messagingSenderId: "688097031917",
+      appId: "1:688097031917:web:5ded9a43f2324b0eed7ee4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    console.log("🔥 Firebase conectado a tecnotecagamificacion");
+
+    // Jugador
     const player = localStorage.getItem("tecnotecaPlayerName") || "Sin nombre";
     document.getElementById("playerLabel").textContent = player;
 
@@ -114,32 +104,35 @@
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
+
       feedback.textContent = "Enviando respuestas...";
 
       try {
-        // Obtener datos del formulario
         const encuestaData = {
           jugador: player,
-          visita: form.querySelector('select[name="visita"]').value,
-          gusto: form.querySelector('select[name="gusto"]').value,
-          comentarios: form.querySelector('textarea[name="comentarios"]').value,
+          visita: form.visita.value,
+          gusto: form.gusto.value,
+          comentarios: form.comentarios.value,
           fecha: new Date().toISOString(),
           timestamp: Date.now()
         };
 
-        // Guardar en Realtime Database
-        await window.push(window.ref(window.db, "encuestas"), encuestaData);
+        console.log("📤 Enviando:", encuestaData);
 
-        feedback.textContent = "✅ ¡Gracias por tu respuesta! Volviendo al inicio...";
+        await push(ref(db, "encuestas"), encuestaData);
+
+        console.log("✅ Guardado correctamente");
+
+        feedback.textContent = "✅ ¡Gracias por tu respuesta!";
         form.reset();
 
         setTimeout(() => {
           window.location.href = "../index.html";
         }, 1500);
+
       } catch (error) {
-        console.error("Error al guardar:", error);
-        feedback.textContent = "❌ Error al enviar. Intenta de nuevo.";
-        feedback.style.color = "red";
+        console.error("❌ ERROR:", error);
+        feedback.textContent = "❌ Error al enviar";
       }
     });
   </script>
