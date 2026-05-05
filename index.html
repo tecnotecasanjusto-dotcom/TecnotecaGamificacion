@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Tecnoteca - Inicio</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="index.css">
+</head>
+<body>
+	<div class="floating-logos" aria-hidden="true">
+		<img class="floating-logo logo-shape logo-f1" src="images/tec.png" alt="">
+		<img class="floating-logo logo-textmark logo-f2" src="images/educ.png" alt="">
+		<img class="floating-logo logo-shape logo-f3" src="images/tec.png" alt="">
+		<img class="floating-logo logo-textmark logo-f4" src="images/educ.png" alt="">
+		<img class="floating-logo logo-shape logo-f5" src="images/tec.png" alt="">
+		<img class="floating-logo logo-textmark logo-f6" src="images/educ.png" alt="">
+	</div>
+
+	<div class="floating-squares" aria-hidden="true">
+		<div class="square-logo sq-1"><img src="images/tec.png" alt=""></div>
+		<div class="square-logo sq-2"><img src="images/educ.png" alt=""></div>
+	</div>
+
+	<main class="app-shell home-shell">
+		<section class="name-section panel">
+			<h1 class="hero-title">Bienvenidos a Tecnoteca</h1>
+			<p class="intro-text">Ingresa tu nombre para continuar.</p>
+			<div class="name-row">
+				<input id="playerNameInput" type="text" placeholder="Ingresa tu nombre para jugar..." maxlength="30">
+				<button id="confirmNameBtn" class="btn btn-primary" type="button">Confirmar</button>
+			</div>
+			<p id="nameStatus" class="name-status">Debes confirmar tu nombre antes de entrar al juego o a la encuesta.</p>
+		</section>
+
+		<section class="cards-section">
+			<article id="quizCard" class="mode-card quiz-card" role="button" tabindex="0">
+				<h3><span class="card-emoji" aria-hidden="true">🎮</span><span class="card-title-text">Juego Quiz Tecnoteca</span></h3>
+				<p>Pon a prueba tus conocimientos</p>
+			</article>
+			<article id="surveyCard" class="mode-card survey-card" role="button" tabindex="0">
+				<h3><span class="card-emoji" aria-hidden="true">📋</span><span class="card-title-text">Ayudanos a mejorar</span></h3>
+				<p>Participa en la encuesta</p>
+			</article>
+		</section>
+	</main>
+
+	<script>
+		const playerNameInput = document.getElementById("playerNameInput");
+		const confirmNameBtn = document.getElementById("confirmNameBtn");
+		const nameStatus = document.getElementById("nameStatus");
+		const quizCard = document.getElementById("quizCard");
+		const surveyCard = document.getElementById("surveyCard");
+
+		localStorage.removeItem("tecnotecaPlayerName");
+		let playerName = "";
+
+		function confirmName() {
+			const value = playerNameInput.value.trim();
+			if (!value) {
+				nameStatus.textContent = "Escribe tu nombre para continuar.";
+				nameStatus.classList.add("warn");
+				playerNameInput.focus();
+				return false;
+			}
+
+			playerName = value;
+			localStorage.setItem("tecnotecaPlayerName", playerName);
+			nameStatus.textContent = "Debes confirmar tu nombre antes de entrar al juego o a la encuesta.";
+			nameStatus.classList.remove("warn");
+			return true;
+		}
+
+		function goToPage(targetPage) {
+			if (!playerName && !confirmName()) {
+				return;
+			}
+			window.location.href = targetPage;
+		}
+
+		confirmNameBtn.addEventListener("click", confirmName);
+		playerNameInput.addEventListener("keydown", (event) => {
+			if (event.key === "Enter") {
+				event.preventDefault();
+				confirmName();
+			}
+		});
+
+		quizCard.addEventListener("click", () => goToPage("pages/quiz.html"));
+		surveyCard.addEventListener("click", () => goToPage("pages/survey.html"));
+
+		quizCard.addEventListener("keydown", (event) => {
+			if (event.key === "Enter" || event.key === " ") {
+				event.preventDefault();
+				goToPage("pages/quiz.html");
+			}
+		});
+
+		surveyCard.addEventListener("keydown", (event) => {
+			if (event.key === "Enter" || event.key === " ") {
+				event.preventDefault();
+				goToPage("pages/survey.html");
+			}
+		});
+	</script>
+</body>
+</html>

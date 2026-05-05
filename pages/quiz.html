@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tecnoteca - Juego</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../index.css">
+  <script src="page-theme.js" defer></script>
+</head>
+<body class="quiz-page">
+  <div class="floating-logos" aria-hidden="true">
+    <img class="floating-logo logo-shape logo-f1" src="../images/tec.png" alt="">
+    <img class="floating-logo logo-textmark logo-f2" src="../images/educ.png" alt="">
+    <img class="floating-logo logo-shape logo-f3" src="../images/tec.png" alt="">
+    <img class="floating-logo logo-textmark logo-f4" src="../images/educ.png" alt="">
+    <img class="floating-logo logo-shape logo-f5" src="../images/tec.png" alt="">
+    <img class="floating-logo logo-textmark logo-f6" src="../images/educ.png" alt="">
+  </div>
+
+  <div class="floating-squares" aria-hidden="true">
+    <div class="square-logo sq-1"><img src="../images/tec.png" alt=""></div>
+    <div class="square-logo sq-2"><img src="../images/educ.png" alt=""></div>
+  </div>
+
+  <main class="app-shell subpage-shell demo-shell">
+    <section class="panel demo-panel quiz-demo">
+      <div class="demo-top">
+        <a class="btn btn-soft back-home-btn" href="../Index.html">Volver al inicio</a>
+        <span class="demo-user">Jugador: <strong id="playerLabel">Sin nombre</strong></span>
+      </div>
+
+      <h1 class="hero-title demo-title">Juego Quiz Tecnoteca</h1>
+
+      <div class="quiz-meta">
+        <span class="demo-badge">Tecnologia</span>
+        <span id="gameTimer" class="demo-timer">00:00</span>
+      </div>
+
+      <p class="demo-progress">Pregunta <span id="questionNumber">1</span> de 3</p>
+      <h2 id="questionText" class="demo-question">¿Que significa CPU?</h2>
+
+      <div id="optionsContainer" class="demo-options">
+        <button class="demo-option" type="button">Central Process Utility</button>
+        <button class="demo-option" type="button">Central Processing Unit</button>
+        <button class="demo-option" type="button">Control Program Unit</button>
+        <button class="demo-option" type="button">Computer Personal Unit</button>
+      </div>
+
+      <div class="demo-actions">
+        <button id="nextDemoQuestion" class="btn btn-primary" type="button">Siguiente</button>
+      </div>
+
+      <p id="quizStatus" class="demo-feedback">Selecciona una respuesta y avanza para completar el juego.</p>
+
+      <div id="quizDone" class="demo-finish hidden">
+        <h3>Juego terminado</h3>
+        <p>Tiempo total: <strong id="finalTime">00:00</strong></p>
+        <a class="btn btn-soft back-home-btn" href="../index.html">Volver al inicio</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const player = localStorage.getItem("tecnotecaPlayerName") || "Sin nombre";
+    document.getElementById("playerLabel").textContent = player;
+
+    const demoQuestions = [
+      {
+        question: "¿Ubicacion de Tecnoteca?",
+        options: [
+          "Ernesto Sabato 2220",
+          "Mitre 1500",
+          "Sarmiento 3000",
+          "Avenida 9 de Julio 2500"
+        ]
+      },
+      {
+        question: "¿Cuantas zonas tiene Tecnoteca?",
+        options: ["5", "7", "10", "3"]
+      },
+      {
+        question: "¿Como se llama el Recorrido Historico?",
+        options: ["FORWARD", "REWIND", "RECORRER", "HISTORIA"]
+      }
+    ];
+
+    const questionText = document.getElementById("questionText");
+    const optionsContainer = document.getElementById("optionsContainer");
+    const questionNumber = document.getElementById("questionNumber");
+    const nextButton = document.getElementById("nextDemoQuestion");
+    const gameTimer = document.getElementById("gameTimer");
+    const quizStatus = document.getElementById("quizStatus");
+    const quizDone = document.getElementById("quizDone");
+    const finalTime = document.getElementById("finalTime");
+
+    let index = 0;
+    let selectedOption = "";
+    let secondsElapsed = 0;
+    let timerId = null;
+
+    function formatTime(totalSeconds) {
+      const min = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
+      const sec = String(totalSeconds % 60).padStart(2, "0");
+      return `${min}:${sec}`;
+    }
+
+    function startTimer() {
+      timerId = setInterval(() => {
+        secondsElapsed += 1;
+        gameTimer.textContent = formatTime(secondsElapsed);
+      }, 1000);
+    }
+
+    function finishGame() {
+      clearInterval(timerId);
+      timerId = null;
+
+      document.querySelector(".quiz-meta").classList.add("hidden");
+      document.querySelector(".demo-progress").classList.add("hidden");
+      questionText.classList.add("hidden");
+      optionsContainer.classList.add("hidden");
+      nextButton.classList.add("hidden");
+      quizStatus.classList.add("hidden");
+
+      finalTime.textContent = formatTime(secondsElapsed);
+      quizDone.classList.remove("hidden");
+    }
+
+    function renderDemoQuestion() {
+      const item = demoQuestions[index];
+      questionText.textContent = item.question;
+      questionNumber.textContent = String(index + 1);
+      selectedOption = "";
+      quizStatus.textContent = "Selecciona una respuesta y avanza para completar el juego.";
+
+      optionsContainer.innerHTML = "";
+      item.options.forEach((option) => {
+        const button = document.createElement("button");
+        button.className = "demo-option";
+        button.type = "button";
+        button.textContent = option;
+        button.addEventListener("click", () => {
+          document.querySelectorAll(".demo-option").forEach((node) => node.classList.remove("selected"));
+          button.classList.add("selected");
+          selectedOption = option;
+        });
+        optionsContainer.appendChild(button);
+      });
+
+      nextButton.textContent = index === demoQuestions.length - 1 ? "Finalizar" : "Siguiente";
+    }
+
+    nextButton.addEventListener("click", () => {
+      if (!selectedOption) {
+        quizStatus.textContent = "Primero debes elegir una opcion.";
+        return;
+      }
+
+      if (index === demoQuestions.length - 1) {
+        finishGame();
+        return;
+      }
+
+      index += 1;
+      renderDemoQuestion();
+    });
+
+    startTimer();
+    renderDemoQuestion();
+  </script>
+</body>
+</html>
